@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "DOM",
+      "ES2015"
+    ],
+    "strictNullChecks": true,
+    "strict": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
