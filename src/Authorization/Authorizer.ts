@@ -1,15 +1,38 @@
 import {TokenGenerator, Account, SessionToken} from "../Server/Model";
+import {UserCredentialsDBAccess} from "./UserCredentialsDBAccess";
+import {SessionTokenDBAccess} from "./SessionTokenDBAccess";
 
 export class Authorizer implements TokenGenerator {
 
+    private userCredDBAccess: UserCredentialsDBAccess = new UserCredentialsDBAccess();
+    private sessionTokenDBAcess: SessionTokenDBAccess = new SessionTokenDBAccess();
+
     async generateToken(account: Account): Promise<SessionToken | undefined> {
-        if (account.username === 'qwert' &&
-            account.password === 'qwert') {
-            return {
-                tokenId: 'someTokenId'
+        const resultAccount = await this.userCredDBAccess.getUserCredentials(
+            account.username,
+            account.password
+        )
+
+        if (resultAccount) {
+            const token: SessionToken = {
+                accessRights: resultAccount.accessRights,
+                expirationTime: this.generateExpirationTime(),
+                username: account.username,
+                valid: true,
+                tokenId: this.generateRandomTokenId()
             }
+            await this.sessionTokenDBAcess.storeSessionToken(token);
+            return token;
         } else {
             return undefined;
         }
+    }
+
+    private generateExpirationTime() {
+        return new Date(Date.now() + 60 * 60 * 1000);
+    }
+
+    private generateRandomTokenId() {
+        return Math.random().toString(36).slice(2);
     }
 }
