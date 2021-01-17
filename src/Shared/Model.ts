@@ -1,4 +1,5 @@
 import {Account} from '../Server/Model';
+import exp = require("constants");
 
 
 export enum AccessRight {
@@ -25,4 +26,20 @@ export enum HTTP_METHODS {
     PUT='PUT',
     DELETE='DELETE',
     PATCH='PATCH'
+}
+
+export interface User {
+    id: string,
+    name: string,
+    age: number,
+    email: string,
+    workingPosition: WorkingPosition
+}
+
+export enum WorkingPosition {
+    JUNIOR,
+    PROGRAMMER,
+    ENGINEER,
+    EXPERT,
+    MANAGER
 }

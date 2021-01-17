@@ -1,16 +1,14 @@
 import {IncomingMessage, ServerResponse} from "http";
 import {Account, Handler, TokenGenerator} from "./Model";
 import {HTTP_CODES, HTTP_METHODS} from "../Shared/Model";
+import {BaseRequestHandler} from "./BaseRequestHandler";
 
-export class LoginHandler implements Handler {
+export class LoginHandler extends BaseRequestHandler {
 
-    private req: IncomingMessage;
-    private res: ServerResponse;
     private tokenGenerator: TokenGenerator
 
     public constructor(req: IncomingMessage, res: ServerResponse, tokenGenerator: TokenGenerator) {
-        this.req = req;
-        this.res = res;
+        super(req, res)
         this.tokenGenerator = tokenGenerator
     }
 
@@ -24,11 +22,6 @@ export class LoginHandler implements Handler {
                 await this.handleNotFound();
                 break
         }
-    }
-
-    private async handleNotFound(){
-        this.res.statusCode = HTTP_CODES.NOT_FOUND;
-        this.res.write('not found');
     }
 
     private async handlePost(): Promise<void>{
@@ -46,27 +39,6 @@ export class LoginHandler implements Handler {
         } catch (e) {
             this.res.write('error: ' + e.message);
         }
-    }
-
-    private async getRequestBody(): Promise<Account> {
-        return new Promise((resolve, reject) => {
-            let body = '';
-            this.req.on('data', (data: string) => {
-                body += data;
-            });
-
-            this.req.on('end', () => {
-                try {
-                    resolve(JSON.parse(body));
-                } catch (error) {
-                    reject(error);
-                }
-            });
-
-            this.req.on('error', (error: any) => {
-                reject('error');
-            })
-        })
     }
 
 }
